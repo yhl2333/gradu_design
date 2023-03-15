@@ -95,12 +95,12 @@ class CombatEnv(object):
         y_r = y_r / 10000.0
         y_b = y_b / 10000.0
         v_r = (v_r - 250) / 50
-        v_x = v_x / V_INIT
+        v_x = v_x / 200
         z_r = (z_r - Z_MIN) / (Z_MAX - Z_MIN)
         z_b = (z_b - Z_MIN) / (Z_MAX - Z_MIN)
         pitch_r = pitch_r / PITCH_MAX
-        v_y = v_y/ V_INIT
-        v_z = v_z/ V_INIT
+        v_y = v_y/ 200
+        v_z = v_z/ 200
         # roll_r = roll_r / ROLL_MAX
         # roll_b = roll_b / ROLL_MAX
 
@@ -266,7 +266,7 @@ class CombatEnv(object):
         if self.done is False and self.total_steps >= 250:
             self.done = True
 
-        if distance > DIST_INIT_MAX or distance < 0:
+        if distance > DIST_INIT_MAX or distance < 100:
             reward = -5
             self.cache.push_reward(reward)
             self.done = True

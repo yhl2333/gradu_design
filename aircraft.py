@@ -2,7 +2,7 @@ import numpy as np
 from config import *
 import math
 
-V_MAX = 400
+V_MAX = 250
 V_MIN = 150
 ROLL_MAX = 78.5 * deg2rad
 PITCH_MAX = 45 * deg2rad
@@ -10,7 +10,7 @@ PITCH_MAX = 45 * deg2rad
 Z_INIT = 6000
 Z_MAX = 200000
 Z_MIN = 1000
-V_INIT = 250
+V_INIT = 200
 V_M_INIT = 400
 HEADING_INIT = 0
 ROLL_INIT = 0

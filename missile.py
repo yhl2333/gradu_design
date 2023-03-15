@@ -23,7 +23,7 @@ class Missile:
 
     def __init__(self, num: int):
         self.num = num  # 编号
-        self.ms_v = 400  # 导弹飞行速度大小
+        self.ms_v = 600  # 导弹飞行速度大小
         # self.emitted = False  # 导弹是否已经发射
         # self.hit_tar = False  # 是否命中目标
         # self.sim_end = False  # 是否结束仿真
@@ -96,41 +96,58 @@ class Missile:
         #     # print("sim_step = ", self.sim_step, "sim_time =", self.t)
         #     return
         self.rt, self.vt = self.trans_state(enemy_state)
+        # 拦射发射
+        self.rt = self.rt - self.vt*3
         # if not self.can_hit_tar:
         #     self.rt += np.array([-2000, 2000, 2000])
         state = np.concatenate([self.rt, self.vt, self.rm, self.vm])  # 目标状态和导弹状态
-        while True:
-            k1 = self.dt * PGuidance.equ(self.t, state)
-            k2 = self.dt * PGuidance.equ(self.t + 0.5 * self.dt, state + 0.5 * k1)
-            k3 = self.dt * PGuidance.equ(self.t + 0.5 * self.dt, state + 0.5 * k2)
-            k4 = self.dt * PGuidance.equ(self.t + self.dt, state + k3)
-            state = state + (k1 + 2 * k2 + 2 * k3 + k4) / 6
-            self.state_process.append(state)
-            #self.t_list.append(self.t)
-            # d = np.sqrt(np.square(state[0] - state[6])
-            #             + np.square(state[1] - state[7])
-            #             + np.square(state[2] - state[8]))
-            self.sim_step += 1
-            self.t += self.dt
-            # if self.t > self.max_t:  # 导弹超过最大仿真时间仍未击中目标
-            #     self.hit_tar = False
-            #     self.rt, self.vt, self.rm, self.vm = state[0:3], state[3:6], state[6:9], state[9:]
-            #     self.sim_end = True
-            #     # print('超时未击中目标')
-            #     break
-            # if d < 10:  # 导弹击中目标
-            #     self.hit_tar = True if self.can_hit_tar else False
-            #     self.rt, self.vt, self.rm, self.vm = state[0:3], state[3:6], state[6:9], state[9:]
-            #     self.sim_end = True
-            #     # print(self.can_hit_tar, self.hit_tar)
-            #     # if self.can_hit_tar and self.hit_tar:
-            #     #     print('成功击中目标')
-            #     # else:
-            #     #     print('未击中目标')
-            #     break
-            if self.sim_step % self.sim_ratio == 0:
-                self.rt, self.vt, self.rm, self.vm = state[0:3], state[3:6], state[6:9], state[9:]
-                break
+        if (np.linalg.norm(self.rm - self.rt) >= 1000):
+            state = np.concatenate([self.rt, self.vt, self.rm, self.vm])  # 目标状态和导弹状态
+            while True:
+                k1 = self.dt * PGuidance.equ(self.t, state)
+                k2 = self.dt * PGuidance.equ(self.t + 0.5 * self.dt, state + 0.5 * k1)
+                k3 = self.dt * PGuidance.equ(self.t + 0.5 * self.dt, state + 0.5 * k2)
+                k4 = self.dt * PGuidance.equ(self.t + self.dt, state + k3)
+                state = state + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+                self.state_process.append(state)
+                # self.t_list.append(self.t)
+                # d = np.sqrt(np.square(state[0] - state[6])
+                #             + np.square(state[1] - state[7])
+                #             + np.square(state[2] - state[8]))
+                self.sim_step += 1
+                self.t += self.dt
+                # if self.t > self.max_t:  # 导弹超过最大仿真时间仍未击中目标
+                #     self.hit_tar = False
+                #     self.rt, self.vt, self.rm, self.vm = state[0:3], state[3:6], state[6:9], state[9:]
+                #     self.sim_end = True
+                #     # print('超时未击中目标')
+                #     break
+                # if d < 10:  # 导弹击中目标
+                #     self.hit_tar = True if self.can_hit_tar else False
+                #     self.rt, self.vt, self.rm, self.vm = state[0:3], state[3:6], state[6:9], state[9:]
+                #     self.sim_end = True
+                #     # print(self.can_hit_tar, self.hit_tar)
+                #     # if self.can_hit_tar and self.hit_tar:
+                #     #     print('成功击中目标')
+                #     # else:
+                #     #     print('未击中目标')
+                #     break
+                if self.sim_step % self.sim_ratio == 0:
+                    self.rt, self.vt, self.rm, self.vm = state[0:3], state[3:6], state[6:9], state[9:]
+                    break
+        else:
+            state = np.concatenate([self.rt, self.vt, self.rm, self.vm])  # 目标状态和导弹状态
+            while True:
+                self.rm = self.rm + self.vm * self.dt
+                state = np.concatenate([self.rt, self.vt, self.rm, self.vm])
+                self.state_process.append(state)
+
+                self.sim_step += 1
+                self.t += self.dt
+
+                if self.sim_step % self.sim_ratio == 0:
+                    self.rt, self.vt, self.rm, self.vm = state[0:3], state[3:6], state[6:9], state[9:]
+                    break
 
         self.vm = self.vm / np.linalg.norm(self.vm) * self.ms_v
         state = np.concatenate([self.rm, [self.ms_v], self.vm])

@@ -28,8 +28,8 @@ def angle_adv_linear(state):
 
 def height_adv(state):
     distance, aspect_angle, antenna_train_angle, z_r, z_b, v_r, v_b, pitch_r, pitch_b, roll_r, roll_b = state
-    if z_r - z_b > 1000:
-        return 1.0
+    if z_r - z_b > 4000:
+        return -1.0
     elif z_r - z_b < -1000:
         return -1.0
     else:

@@ -14,7 +14,7 @@ DRAW_WITH_ADVANTAGE = False
 if __name__ == '__main__':
     env = CombatEnv()
     agent = Agent(env)
-    agent.load_model('model/airCom9319')
+    agent.load_model('model/airCom11359')
     cache = agent.test_result()
     r_states = cache.get_r_states()
     b_states = cache.get_b_states()
@@ -26,7 +26,7 @@ if __name__ == '__main__':
     print(rewards)
     print("我方机状态量{0}".format(r_states))
     print("我方机选取动作{0}".format(r_actions))
-    print("导弹状态量{0}".format(missile1_states))
+
     angle_adv = cache.get_angle_adv()
     height_adv = cache.get_height_adv()
     velocity_adv = cache.get_velocity_adv()
